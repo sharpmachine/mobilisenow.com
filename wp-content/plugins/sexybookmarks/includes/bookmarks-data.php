@@ -137,11 +137,6 @@ $shrsb_bookmarks_data=array(
 		'check'=>sprintf($checkthis_text,'BobrDobr').__(' (Russian)', 'shrsb'),
 		'share'=>__('Share this on ', 'shrsb').'BobrDobr'
 	),
-	'shr-yandex'=>array(
-		'id'=>267,
-		'check'=>sprintf($checkthis_text,'Yandex.Bookmarks').__(' (Russian)', 'shrsb'),
-		'share'=>__('Add this to ', 'shrsb').'Yandex.Bookmarks'
-	),
 	'shr-memoryru'=>array(
 		'id'=>269,
 		'check'=>sprintf($checkthis_text,'Memory.ru').__(' (Russian)', 'shrsb'),
@@ -186,11 +181,6 @@ $shrsb_bookmarks_data=array(
 		'id'=>204,
 		'check'=>sprintf($checkthis_text,'TechMeme'),
 		'share'=>__('Tip this to ', 'shrsb').'TechMeme'
-	),
-	'shr-posterous'=>array(
-		'id'=>210,
-		'check'=>sprintf($checkthis_text,'Posterous'),
-		'share'=>__('Post this to ', 'shrsb').'Posterous'
 	),
 	'shr-globalgrind'=>array(
 		'id'=>89,
@@ -256,11 +246,6 @@ $shrsb_bookmarks_data=array(
 		'id'=>61,
 		'check'=>sprintf($checkthis_text,'SlashDot'),
 		'share'=>__('Submit this to ', 'shrsb').'SlashDot'
-	),
-	'shr-squidoo'=>array(
-		'id'=>46,
-		'check'=>sprintf($checkthis_text,'Squidoo'),
-		'share'=>__('Add to a lense on ', 'shrsb').'Squidoo'
 	),
 	'shr-evernote'=>array(
 		'id'=>191,

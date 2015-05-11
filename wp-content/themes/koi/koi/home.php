@@ -15,8 +15,6 @@ Template Name: Home
 
 <div id="content">
 
-<span class="alt">Hey there, take a look below.  We have a gift for you.  It's awesome.</span>
-
 <br />
 
 <br />
@@ -93,19 +91,19 @@ Template Name: Home
 
 
 
+<!--<div class="span-7">
+
+<h3>Special<span class="alt"> Offer</span></h3>
+
+        <p>For a limited time we have a reduced price for this powerful teaching <strong>"Praying with God"</strong> as an mp3 download.  All you have to do is sign-up for our email list.  You can opt-out at anytime so if you want to be sneaky and sign up so you can get the teaching and then unsubscribe as soon you download the teaching, that's cool with us.</p>
+
+<p>If you're asking yourself "What is this 'Praying with God' teaching all about?", read John's article, <a href="http://mobilisenow.com/intercession/comment-on-the-praying-with-god-cd">"What is this 'Praying with God' teaching all about?".</a></p>
+
+</div>-->
+
+
+
 <div class="span-7">
-
-<h3>Free <span class="alt">Gift</span></h3>
-
-        <p>For a limited time we are giving away the crazy, insanely powerful teaching <strong>"Praying with God"</strong> as an mp3 download.  All you have to do is sign-up for our email list.  You can opt-out at anytime so if you want to be sneaky and sign up so you can get the teaching and then unsubscribe as soon you download the teaching, that's cool with us.</p>
-
-<p>If you're asking yourself "What the heck is this 'Praying with God' teaching all about?", read John's article, <a href="http://mobilisenow.com/intercession/comment-on-the-praying-with-god-cd">"What the heck is this 'Praying with God' teaching all about?".</a></p>
-
-</div>
-
-
-
-<div class="span-7 last">
 
 <!-- Begin MailChimp Signup Form -->
 
@@ -475,7 +473,7 @@ function mce_success_cb(resp){
 
         <h3>Partnering <span class="alt">Business</span></h3>
 
-        <p>We've partnered with <strong>Sharp Machine Media</strong> to get this website and its content up and running.  We don't know anything about marketing, email campaigns, graphic design, and anything related to running a successful website, but Sharp Machine Media sure do.  If you fancy a website, fancy them.</p>
+        <p>We've partnered with <strong>Sharp Machine Media</strong> to get this website and its content up and running. If you fancy a website, fancy them.</p>
 
         <p><a href="http://www.sharpmachinemedia.com" title="Sharp Machine Media website">Visit Site...</a></p>
 

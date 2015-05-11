@@ -7,7 +7,11 @@ if( !defined('EM_TAXONOMY_TAG') ) define('EM_TAXONOMY_TAG','event-tags');
 //Slugs
 define('EM_POST_TYPE_EVENT_SLUG',get_option('dbem_cp_events_slug', 'events'));
 define('EM_POST_TYPE_LOCATION_SLUG',get_option('dbem_cp_locations_slug', 'locations'));
-define('EM_TAXONOMY_CATEGORY_SLUG', get_site_option('dbem_taxonomy_category_slug', 'events/categories'));
+if( EM_MS_GLOBAL ){
+	define('EM_TAXONOMY_CATEGORY_SLUG', get_site_option('dbem_taxonomy_category_slug', 'events/categories'));
+}else{
+	define('EM_TAXONOMY_CATEGORY_SLUG', get_option('dbem_taxonomy_category_slug', 'events/categories'));
+}
 define('EM_TAXONOMY_TAG_SLUG', get_option('dbem_taxonomy_tag_slug', 'events/tags'));
 
 /*
@@ -117,7 +121,7 @@ function wp_events_plugin_init(){
 		'show_in_menu' => true,
 		'show_in_nav_menus'=>true,
 		'can_export' => true,
-		'exclude_from_search' => false,
+		'exclude_from_search' => !get_option('dbem_cp_events_search_results'),
 		'publicly_queryable' => true,
 		'rewrite' => array('slug' => EM_POST_TYPE_EVENT_SLUG,'with_front'=>false),
 		'has_archive' => get_option('dbem_cp_events_has_archive', false) == true,
@@ -152,7 +156,8 @@ function wp_events_plugin_init(){
 			'not_found_in_trash' => __('No Events Found in Trash','dbem'),
 			'parent' => __('Parent Event','dbem'),
 		),
-		'menu_icon' => plugins_url('includes/images/calendar-16.png', __FILE__)
+		'menu_icon' => plugins_url('includes/images/calendar-16.png', __FILE__),
+		'yarpp_support'=>true
 	);
 	if ( get_option('dbem_recurrence_enabled') ){
 		$event_recurring_post_type = array(	
@@ -205,11 +210,12 @@ function wp_events_plugin_init(){
 			'public' => true,
 			'hierarchical' => false,
 			'show_in_admin_bar' => true,
+			//if in MS Global mode with locations shown on main blog, then the ui shouldn't be available on network blogs:
 			'show_ui' => !(EM_MS_GLOBAL && !is_main_site() && get_site_option('dbem_ms_mainblog_locations')),
 			'show_in_menu' => 'edit.php?post_type='.EM_POST_TYPE_EVENT,
 			'show_in_nav_menus'=>true,
 			'can_export' => true,
-			'exclude_from_search' => get_option('dbem_cp_locations_search_results') == false,
+			'exclude_from_search' => !get_option('dbem_cp_locations_search_results'),
 			'publicly_queryable' => true,
 			'rewrite' => array('slug' => EM_POST_TYPE_LOCATION_SLUG, 'with_front'=>false),
 			'query_var' => true,
@@ -244,7 +250,8 @@ function wp_events_plugin_init(){
 				'not_found' => __('No Locations Found','dbem'),
 				'not_found_in_trash' => __('No Locations Found in Trash','dbem'),
 				'parent' => __('Parent Location','dbem'),
-			)
+			),
+			'yarpp_support'=>true
 		);
 	}
 	if( strstr(EM_POST_TYPE_EVENT_SLUG, EM_POST_TYPE_LOCATION_SLUG) !== FALSE ){

@@ -12,3 +12,8 @@ wp-content/cache/
 wp-content/backups/
 sitemap.xml
 sitemap.xml.gz
+wp-content/cache/
+wp-content/upgrades/
+wp-content/w3tc/
+wp-content/w3tc-config/
+wp-content/themes/mio/

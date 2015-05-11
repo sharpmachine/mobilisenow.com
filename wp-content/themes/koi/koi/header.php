@@ -2,7 +2,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 
-<!--Lord we decree that his this ministry, Mobilise Now will be a blessing to the body of Christ.  We decree that the burning and their hearts desire to see the body mobilised in the love and the power of God would be made manifest in the name of Jesus.  We speak success and wealth over this ministry, and the wisdom and understanding to steward it. Amen-->
+<!--Lord we decree that his this ministry, Mobilise Now will be a blessing to the body of Christ.  We decree their hearts desire to see the body mobilised in the love and the power of God would be made manifest in the name of Jesus.  We speak success and wealth over this ministry, and the wisdom and understanding to steward it. Amen-->
 
 <head>
 
@@ -10,7 +10,7 @@
 
 <meta name="description" content="Mobilise Now is a ministry dedicated to mobilising the body of Christ in the power of God.">
 
-    <meta name="keywords" content="mobilise, mobilize, john alcock, heather alcock, sharp machine media, jesse kade, jesus christ, jesus, God, ministry, prayer, intercession, healing, prophesy, prophetic, holy spirit">
+    <meta name="keywords" content="mobilise, mobilize, john alcock, heather alcock, praying with God, how to pray, acceptable prayer, good prayer, jesus christ, perfect prayer, jesus, God, ministry, prayer, intercession, healing, prophesy, prophetic, holy spirit">
 
 <title><?php if (is_home()) {
 

@@ -15,7 +15,7 @@ $hours_format = em_get_hour_format();
 			?>
 		</select>
 		<?php _e ( 'every', 'dbem' )?>
-		<input id="recurrence-interval" name='recurrence_interval' size='2' value='<?php echo $EM_Event->interval ; ?>' />
+		<input id="recurrence-interval" name='recurrence_interval' size='2' value='<?php echo $EM_Event->recurrence_interval ; ?>' />
 		<span class='interval-desc' id="interval-daily-singular"><?php _e ( 'day', 'dbem' )?></span>
 		<span class='interval-desc' id="interval-daily-plural"><?php _e ( 'days', 'dbem' ) ?></span>
 		<span class='interval-desc' id="interval-weekly-singular"><?php _e ( 'week on', 'dbem'); ?></span>
@@ -60,9 +60,7 @@ $hours_format = em_get_hour_format();
 			<?php _e('All day','dbem'); ?> <input type="checkbox" class="em-time-allday" name="event_all_day" id="em-time-all-day" value="1" <?php if(!empty($EM_Event->event_all_day)) echo 'checked="checked"'; ?> />
 		</p>
 		<p class="em-duration-range">
-			<?php _e('Each event lasts','dbem'); ?>
-			<input id="end-days" type="text" size="8" maxlength="8" name="recurrence_days" value="<?php echo $EM_Event->recurrence_days; ?>" />
-			<?php _e('day(s)','dbem'); ?>
+			<?php echo sprintf(__('Each event spans %s day(s)','dbem'), '<input id="end-days" type="text" size="8" maxlength="8" name="recurrence_days" value="'. $EM_Event->recurrence_days .'" />'); ?>
 		</p>
 		<p class="em-range-description"><em><?php _e( 'For a recurring event, a one day event will be created on each recurring date within this date range.', 'dbem' ); ?></em></p>
 	</div> 
