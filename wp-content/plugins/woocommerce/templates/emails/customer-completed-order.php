@@ -7,15 +7,19 @@
  * @version     1.6.4
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly ?>
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
 
-<?php do_action('woocommerce_email_header', $email_heading); ?>
+?>
+
+<?php do_action( 'woocommerce_email_header', $email_heading ); ?>
 
 <p><?php printf( __( "Hi there. Your recent order on %s has been completed. Your order details are shown below for your reference:", 'woocommerce' ), get_option( 'blogname' ) ); ?></p>
 
-<?php do_action('woocommerce_email_before_order_table', $order, false); ?>
+<?php do_action( 'woocommerce_email_before_order_table', $order, $sent_to_admin, $plain_text ); ?>
 
-<h2><?php echo __( 'Order:', 'woocommerce' ) . ' ' . $order->get_order_number(); ?></h2>
+<h2><?php printf( __( 'Order #%s', 'woocommerce' ), $order->get_order_number() ); ?></h2>
 
 <table cellspacing="0" cellpadding="6" style="width: 100%; border: 1px solid #eee;" border="1" bordercolor="#eee">
 	<thead>
@@ -44,19 +48,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly ?>
 	</tfoot>
 </table>
 
-<?php do_action('woocommerce_email_after_order_table', $order, false); ?>
+<?php do_action( 'woocommerce_email_after_order_table', $order, $sent_to_admin, $plain_text ); ?>
 
-<?php do_action( 'woocommerce_email_order_meta', $order, false ); ?>
+<?php do_action( 'woocommerce_email_order_meta', $order, $sent_to_admin, $plain_text ); ?>
 
-<h2><?php _e( 'Customer details', 'woocommerce' ); ?></h2>
+<?php do_action( 'woocommerce_email_customer_details', $order, $sent_to_admin, $plain_text ); ?>
 
-<?php if ($order->billing_email) : ?>
-	<p><strong><?php _e( 'Email:', 'woocommerce' ); ?></strong> <?php echo $order->billing_email; ?></p>
-<?php endif; ?>
-<?php if ($order->billing_phone) : ?>
-	<p><strong><?php _e( 'Tel:', 'woocommerce' ); ?></strong> <?php echo $order->billing_phone; ?></p>
-<?php endif; ?>
-
-<?php woocommerce_get_template('emails/email-addresses.php', array( 'order' => $order )); ?>
-
-<?php do_action('woocommerce_email_footer'); ?>
+<?php do_action( 'woocommerce_email_footer' ); ?>

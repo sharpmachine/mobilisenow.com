@@ -135,6 +135,7 @@ class EM_Tickets extends EM_Object implements Iterator{
 			foreach($_POST['em_tickets'] as $row => $ticket_data){
 			    if( $row > 0 ){
 					$EM_Ticket = new EM_Ticket();
+					$ticket_data['event_id'] = $this->event_id;
 					$EM_Ticket->get_post($ticket_data);
 					$this->tickets[] = $EM_Ticket;
 			    }
@@ -167,13 +168,16 @@ class EM_Tickets extends EM_Object implements Iterator{
 	 * Save tickets into DB 
 	 */
 	function save(){
-		$errors = array();
+		$result = true;
 		foreach( $this->tickets as $EM_Ticket ){
 			/* @var $EM_Ticket EM_Ticket */
 			$EM_Ticket->event_id = $this->event_id; //pass on saved event_data
-			$errors[] = $EM_Ticket->save();
+			if( !$EM_Ticket->save() ){
+				$result = false;
+				$this->add_error($EM_Ticket->get_errors());
+			}
 		}
-		return apply_filters('em_tickets_save', !in_array(false, $errors), $this);
+		return apply_filters('em_tickets_save', $result, $this);
 	}
 	
 	/**

@@ -1,288 +1,87 @@
 <?php
-global $wpdb; 
- if(!file_exists(dirname(__FILE__).'/cache/'))
-    die("<code>".dirname(__FILE__).'/cache/</code> is missing!' );
-    
-    if(!is_writable(dirname(__FILE__).'/cache/'))
-    die("<code>".dirname(__FILE__).'/cache/</code> must have to be writable!' );
-$did = explode('.',base64_decode($_GET['did']));
-$id = array_shift($did);
-if(!is_numeric($id)){   
-    $_GET['did'] = esc_attr($_GET['did']); 
-    $data = @unserialize(file_get_contents(dirname(__FILE__).'/cache/'.$_GET['did']));
-   
-}
-else {    
-    
-    $id = (int)$id;
-    $data = $wpdb->get_row("select * from ahm_files where id='$id'",ARRAY_A);
-}
 
-if(is_array($data)){   
-    if($data['access']=='member'&&!is_user_logged_in()) {
-        header("location: wp-login.php?redirect_to=".urlencode($_SERVER['REQUEST_URI']));
-        die();
-    }
-    @unlink(dirname(__FILE__).'/cache/'.$_GET['did']);
+    if(!defined('ABSPATH')) exit();
+
+    do_action("wpdm_onstart_download", $package);
+
+    global $current_user, $dfiles;
     
-    
-    if($data['download_count']>=$data['quota']&&$data['quota']>0) die('Download Limit Excedded!');
+    $speed = get_option('__wpdm_download_speed',4096); //in KB - default 4 MB
+    $speed = apply_filters('wpdm_download_speed', $speed);
+     
+    get_currentuserinfo();
+    if(wpdm_is_download_limit_exceed($package['ID'])) die(__msg('DOWNLOAD_LIMIT_EXCEED'));
+    $files = $package['files'];
+//    $dir = isset($package['package_dir'])?$package['package_dir']:'';
+//    if($dir!=''){
+//    $dfiles = array();
+//    wpmp_get_files($dir);
+//    }
+    $log = new Stats();
         
-    //added for download monitor import feature
-    $data['file'] = str_replace(site_url('/'),ABSPATH, $data['file']);
+    $oid = isset($_GET['oid'])?addslashes($_GET['oid']):'';
+
+    if(!isset($_GET['ind'])&&!isset($_GET['nostat']))
+    $log->NewStat($package['ID'], $current_user->ID,$oid);
+
+    if(count($files)==0) {
+      if(isset($package['sourceurl'])&&$package['sourceurl']!='') {
+                
+        if(!isset($package['url_protect'])||$package['url_protect']==0&&strpos($package['sourceurl'],'://')){
+            header('location: '.$package['sourceurl']);
+            die();
+        }
+        
+        $r_filename = basename($package['sourceurl']);
+        $r_filename = explode("?", $r_filename);
+        $r_filename = $r_filename[0];
+        wpdm_download_file($package['sourceurl'],$r_filename, $speed, 1, $package);
+        die();
+      } 
+    
+       wpdm_download_data('download-not-available.txt','Sorry! Download is not available yet.');
+       die();
+    
+    }
      
-    if(strpos($data['file'],'ttp://')){
-        header("location: ".$data['file']);
+    $idvdl = isset($package['individual_file_download'])&&isset($_GET['ind'])?1:0;
+
+    
+    //Individual file or single file download section
+
+        $ind = 0;
+
+
+
+
+    $files[$ind] = trim($files[$ind]);
+
+    if(strpos($files[$ind], "://")) {
+        header("location: ". $files[$ind]);
         die();
     }
-    $data['file'] = trim($data['file']);
-    if(file_exists($data['file']))
-    $fname = $data['file'];    
-    else if(file_exists(UPLOAD_DIR . $data['file']))
-    $fname = UPLOAD_DIR . $data['file'];
-    else 
-    die('File not found!');
-    
-    $wpdb->query("update ahm_files set download_count=download_count+1 where id='$data[id]'");
-/*    
-    $mime_types = array("323" => "text/h323",
-                        "acx" => "application/internet-property-stream",
-                        "ai" => "application/postscript",
-                        "aif" => "audio/x-aiff",
-                        "aifc" => "audio/x-aiff",
-                        "aiff" => "audio/x-aiff",
-                        "asf" => "video/x-ms-asf",
-                        "asr" => "video/x-ms-asf",
-                        "asx" => "video/x-ms-asf",
-                        "au" => "audio/basic",
-                        "avi" => "video/x-msvideo",
-                        "axs" => "application/olescript",
-                        "bas" => "text/plain",
-                        "bcpio" => "application/x-bcpio",
-                        "bin" => "application/octet-stream",
-                        "bmp" => "image/bmp",
-                        "c" => "text/plain",
-                        "cat" => "application/vnd.ms-pkiseccat",
-                        "cdf" => "application/x-cdf",
-                        "cer" => "application/x-x509-ca-cert",
-                        "class" => "application/octet-stream",
-                        "clp" => "application/x-msclip",
-                        "cmx" => "image/x-cmx",
-                        "cod" => "image/cis-cod",
-                        "cpio" => "application/x-cpio",
-                        "crd" => "application/x-mscardfile",
-                        "crl" => "application/pkix-crl",
-                        "crt" => "application/x-x509-ca-cert",
-                        "csh" => "application/x-csh",
-                        "css" => "text/css",
-                        "dcr" => "application/x-director",
-                        "der" => "application/x-x509-ca-cert",
-                        "dir" => "application/x-director",
-                        "dll" => "application/x-msdownload",
-                        "dms" => "application/octet-stream",
-                        "doc" => "application/msword",
-                        "dot" => "application/msword",
-                        "dvi" => "application/x-dvi",
-                        "dxr" => "application/x-director",
-                        "eps" => "application/postscript",
-                        "etx" => "text/x-setext",
-                        "evy" => "application/envoy",
-                        "exe" => "application/octet-stream",
-                        "fif" => "application/fractals",
-                        "flr" => "x-world/x-vrml",
-                        "gif" => "image/gif",
-                        "gtar" => "application/x-gtar",
-                        "gz" => "application/x-gzip",
-                        "h" => "text/plain",
-                        "hdf" => "application/x-hdf",
-                        "hlp" => "application/winhlp",
-                        "hqx" => "application/mac-binhex40",
-                        "hta" => "application/hta",
-                        "htc" => "text/x-component",
-                        "htm" => "text/html",
-                        "html" => "text/html",
-                        "htt" => "text/webviewhtml",
-                        "ico" => "image/x-icon",
-                        "ief" => "image/ief",
-                        "iii" => "application/x-iphone",
-                        "ins" => "application/x-internet-signup",
-                        "isp" => "application/x-internet-signup",
-                        "jfif" => "image/pipeg",
-                        "jpe" => "image/jpeg",
-                        "jpeg" => "image/jpeg",
-                        "jpg" => "image/jpeg",
-                        "js" => "application/x-javascript",
-                        "latex" => "application/x-latex",
-                        "lha" => "application/octet-stream",
-                        "lsf" => "video/x-la-asf",
-                        "lsx" => "video/x-la-asf",
-                        "lzh" => "application/octet-stream",
-                        "m13" => "application/x-msmediaview",
-                        "m14" => "application/x-msmediaview",
-                        "m3u" => "audio/x-mpegurl",
-                        "man" => "application/x-troff-man",
-                        "mdb" => "application/x-msaccess",
-                        "me" => "application/x-troff-me",
-                        "mht" => "message/rfc822",
-                        "mhtml" => "message/rfc822",
-                        "mid" => "audio/mid",
-                        "mny" => "application/x-msmoney",
-                        "mov" => "video/quicktime",
-                        "movie" => "video/x-sgi-movie",
-                        "mp2" => "video/mpeg",
-                        "mp3" => "audio/mpeg",
-                        "mpa" => "video/mpeg",
-                        "mpe" => "video/mpeg",
-                        "mpeg" => "video/mpeg",
-                        "mpg" => "video/mpeg",
-                        "mpp" => "application/vnd.ms-project",
-                        "mpv2" => "video/mpeg",
-                        "ms" => "application/x-troff-ms",
-                        "mvb" => "application/x-msmediaview",
-                        "nws" => "message/rfc822",
-                        "oda" => "application/oda",
-                        "p10" => "application/pkcs10",
-                        "p12" => "application/x-pkcs12",
-                        "p7b" => "application/x-pkcs7-certificates",
-                        "p7c" => "application/x-pkcs7-mime",
-                        "p7m" => "application/x-pkcs7-mime",
-                        "p7r" => "application/x-pkcs7-certreqresp",
-                        "p7s" => "application/x-pkcs7-signature",
-                        "pbm" => "image/x-portable-bitmap",
-                        "pdf" => "application/pdf",
-                        "pfx" => "application/x-pkcs12",
-                        "pgm" => "image/x-portable-graymap",
-                        "pko" => "application/ynd.ms-pkipko",
-                        "pma" => "application/x-perfmon",
-                        "pmc" => "application/x-perfmon",
-                        "pml" => "application/x-perfmon",
-                        "pmr" => "application/x-perfmon",
-                        "pmw" => "application/x-perfmon",
-                        "pnm" => "image/x-portable-anymap",
-                        "pot" => "application/vnd.ms-powerpoint",
-                        "ppm" => "image/x-portable-pixmap",
-                        "pps" => "application/vnd.ms-powerpoint",
-                        "ppt" => "application/vnd.ms-powerpoint",
-                        "prf" => "application/pics-rules",
-                        "ps" => "application/postscript",
-                        "pub" => "application/x-mspublisher",
-                        "qt" => "video/quicktime",
-                        "ra" => "audio/x-pn-realaudio",
-                        "ram" => "audio/x-pn-realaudio",
-                        "ras" => "image/x-cmu-raster",
-                        "rgb" => "image/x-rgb",
-                        "rmi" => "audio/mid",
-                        "roff" => "application/x-troff",
-                        "rtf" => "application/rtf",
-                        "rtx" => "text/richtext",
-                        "scd" => "application/x-msschedule",
-                        "sct" => "text/scriptlet",
-                        "setpay" => "application/set-payment-initiation",
-                        "setreg" => "application/set-registration-initiation",
-                        "sh" => "application/x-sh",
-                        "shar" => "application/x-shar",
-                        "sit" => "application/x-stuffit",
-                        "snd" => "audio/basic",
-                        "spc" => "application/x-pkcs7-certificates",
-                        "spl" => "application/futuresplash",
-                        "src" => "application/x-wais-source",
-                        "sst" => "application/vnd.ms-pkicertstore",
-                        "stl" => "application/vnd.ms-pkistl",
-                        "stm" => "text/html",
-                        "svg" => "image/svg+xml",
-                        "sv4cpio" => "application/x-sv4cpio",
-                        "sv4crc" => "application/x-sv4crc",
-                        "t" => "application/x-troff",
-                        "tar" => "application/x-tar",
-                        "tcl" => "application/x-tcl",
-                        "tex" => "application/x-tex",
-                        "texi" => "application/x-texinfo",
-                        "texinfo" => "application/x-texinfo",
-                        "tgz" => "application/x-compressed",
-                        "tif" => "image/tiff",
-                        "tiff" => "image/tiff",
-                        "tr" => "application/x-troff",
-                        "trm" => "application/x-msterminal",
-                        "tsv" => "text/tab-separated-values",
-                        "txt" => "text/plain",
-                        "uls" => "text/iuls",
-                        "ustar" => "application/x-ustar",
-                        "vcf" => "text/x-vcard",
-                        "vrml" => "x-world/x-vrml",
-                        "wav" => "audio/x-wav",
-                        "wcm" => "application/vnd.ms-works",
-                        "wdb" => "application/vnd.ms-works",
-                        "wks" => "application/vnd.ms-works",
-                        "wmf" => "application/x-msmetafile",
-                        "wps" => "application/vnd.ms-works",
-                        "wri" => "application/x-mswrite",
-                        "wrl" => "x-world/x-vrml",
-                        "wrz" => "x-world/x-vrml",
-                        "xaf" => "x-world/x-vrml",
-                        "xbm" => "image/x-xbitmap",
-                        "xla" => "application/vnd.ms-excel",
-                        "xlc" => "application/vnd.ms-excel",
-                        "xlm" => "application/vnd.ms-excel",
-                        "xls" => "application/vnd.ms-excel",
-                        "xlt" => "application/vnd.ms-excel",
-                        "xlw" => "application/vnd.ms-excel",
-                        "xof" => "x-world/x-vrml",
-                        "xpm" => "image/x-xpixmap",
-                        "xwd" => "image/x-xwindowdump",
-                        "z" => "application/x-compress",
-                        "zip" => "application/zip");
- * 
- */
-     
-    $filetype = wp_check_filetype($fname);
-                       
-    $mtype = $filetype['type'];
-    
-    $asfname = basename($fname);
 
-    $fsize = filesize($fname);
-
-    header("Content-Description: File Transfer");
-    header("Content-Type: $mtype");
-    header("Content-Disposition: attachment; filename=\"$asfname\"");
-    header("Content-Transfer-Encoding: binary");
-    header("Content-Length: " . $fsize);
-    
- 
-    $wpdm_tsize = 0;
-    $wpdm_chunk = 8192;
-    $file = @fopen($fname,"rb");
-    $wpdm_rest = $fsize;
-    if ($file) {
-
-                                       
-       while (!feof($file)) {
-            if($wpdm_rest<$wpdm_chunk&&$wpdm_rest>0) $wpdm_chunk = $wpdm_rest;
-            echo fread($file, $wpdm_chunk);
-            if(function_exists('ob_flush')) @ob_flush();
-            $wpdm_tsize += $wpdm_chunk;
-            $wpdm_rest = $fsize - $wpdm_tsize;
-        }
-      fclose($file);
-
-        if (connection_status()!=0) {
-
-          @fclose($file);
-
-          die();
-
-        }
-
-     
-
-      @fclose($file);
-      
-
+    if(file_exists(UPLOAD_DIR.$files[$ind]) && $files[$ind]!='')
+    $filepath = UPLOAD_DIR.$files[$ind];
+    else if(file_exists($files[$ind]) && $files[$ind]!='')
+    $filepath = $files[$ind];
+    else if(file_exists(WP_CONTENT_DIR.end($tmp = explode("wp-content",$files[$ind]))) && $files[$ind]!='') //path fix on site move
+    $filepath = WP_CONTENT_DIR.end($tmp = explode("wp-content",$files[$ind]));
+    else {
+        wpdm_download_data('file-not-found.txt','File not found or deleted from server');
+        die();        
     }
 
-}  else {
-    die('File not found or Downlaoad Link Expired!');
-}
+    //$plock = get_wpdm_meta($file['id'],'password_lock',true);
+    //$fileinfo = get_wpdm_meta($package['id'],'fileinfo');
+     
+    $filename = basename($filepath);
+    $filename = preg_replace("/([0-9]+)[wpdm]*_/","",$filename);
+    
+    wpdm_download_file($filepath, $filename, $speed, 1, $package);    
+    //@unlink($filepath);
 
+
+do_action("after_downlaod", $package);
 die();
 ?>

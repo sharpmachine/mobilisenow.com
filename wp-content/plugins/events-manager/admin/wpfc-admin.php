@@ -21,14 +21,14 @@ function wpfc_em_admin_options(){
 	<div  class="postbox " >
 		<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Full Calendar Options', 'dbem' ); ?> </span></h3>
 		<div class="inside">
-			<p><?php echo sprintf(__('Looking for the rest of the FullCalendar Options? They\'ve moved <a href="%s">here</a>, the options below are for overriding specific bits relevant to Events Manager.','dbem'), admin_url('options-general.php?page=wp-fullcalendar')); ?></p>
+			<p  class="em-boxheader"><?php echo sprintf(__('Looking for the rest of the FullCalendar Options? They\'ve moved <a href="%s">here</a>, the options below are for overriding specific bits relevant to Events Manager.','dbem'), admin_url('options-general.php?page=wp-fullcalendar')); ?></p>
 			<table class='form-table'>
 				<?php
 				global $events_placeholder_tip, $save_button;
 				em_options_radio_binary ( __( 'Override calendar on events page?', 'dbem' ), 'dbem_emfc_override_calendar', __( 'If set to yes, the FullCalendar will be used instead of the standard calendar on the events page.', 'dbem' ) );
 				em_options_radio_binary ( __( 'Override calendar shortcode?', 'dbem' ), 'dbem_emfc_override_shortcode', __( 'Overrides the default calendar shortcode. You can also use [events_fullcalendar] instead.','dbem' ) );
-				em_options_input_text ( __( 'Event title format', 'wpfc' ), 'dbem_emfc_full_calendar_event_format', __('HTML is not accepted.','wpfc').' '.$events_placeholder_tip, '#_EVENTNAME' );
-				em_options_textarea( __( 'Event tooltips format', 'wpfc' ), 'dbem_emfc_qtips_format', __('If you enable tips, this information will be shwon, which can include HTML.','wpfc').' '.$events_placeholder_tip, '#_EVENTNAME' );$positions_options = array();
+				em_options_input_text ( __( 'Event title format', 'dbem' ), 'dbem_emfc_full_calendar_event_format', __('HTML is not accepted.','dbem').' '.$events_placeholder_tip, '#_EVENTNAME' );
+				em_options_textarea( __( 'Event tooltips format', 'dbem' ), 'dbem_emfc_qtips_format', __('If you enable tips, this information will be shown, which can include HTML.','dbem').' '.$events_placeholder_tip, '#_EVENTNAME' );$positions_options = array();
 				?>
 			</table>
 			<?php echo $save_button; ?>

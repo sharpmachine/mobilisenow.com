@@ -77,7 +77,7 @@ function em_init_actions() {
 					$EM_Notices->add_confirm( $EM_Event->output(get_option('dbem_events_anonymous_result_success')), true);
 				}
 				$redirect = !empty($_REQUEST['redirect_to']) ? $_REQUEST['redirect_to'] : wp_get_referer();
-				$redirect = em_add_get_params($redirect, array('success'=>1));
+				$redirect = em_add_get_params($redirect, array('success'=>1), false, false);
 				wp_redirect( $redirect );
 				exit();
 			}else{
@@ -389,7 +389,7 @@ function em_init_actions() {
 			if( $EM_Booking->can_manage('manage_bookings','manage_others_bookings') && $_REQUEST['booking_status'] != $EM_Booking->booking_status ){
 				if ( $EM_Booking->set_status($_REQUEST['booking_status'], false, true) ){
 					if( !empty($_REQUEST['send_email']) ){
-						if( $EM_Booking->email(false) ){
+						if( $EM_Booking->email() ){
 						    if( $EM_Booking->mails_sent > 0 ) {
 						        $EM_Booking->feedback_message .= " ".__('Email Sent.','dbem');
 						    }else{
@@ -450,10 +450,12 @@ function em_init_actions() {
 		}
 		if( $result && defined('DOING_AJAX') ){
 			$return = array('result'=>true, 'message'=>$feedback);
+			header( 'Content-Type: application/javascript; charset=UTF-8', true ); //add this for HTTP -> HTTPS requests which assume it's a cross-site request
 			echo EM_Object::json_encode(apply_filters('em_action_'.$_REQUEST['action'], $return, $EM_Booking));
 			die();
 		}elseif( !$result && defined('DOING_AJAX') ){
 			$return = array('result'=>false, 'message'=>$feedback, 'errors'=>$EM_Notices->get_errors());
+			header( 'Content-Type: application/javascript; charset=UTF-8', true ); //add this for HTTP -> HTTPS requests which assume it's a cross-site request
 			echo EM_Object::json_encode(apply_filters('em_action_'.$_REQUEST['action'], $return, $EM_Booking));
 			die();
 		}
@@ -561,13 +563,19 @@ function em_init_actions() {
 		if( !empty($_REQUEST['em_obj']) ){
 			switch( $_REQUEST['em_obj'] ){
 				case 'em_bookings_events_table':
+					include_once('admin/bookings/em-events.php');
+					em_bookings_events_table();
+					exit();
+					break;
 				case 'em_bookings_pending_table':
+					include_once('admin/bookings/em-pending.php');
+					em_bookings_pending_table();
+					exit();
+					break;
 				case 'em_bookings_confirmed_table':
 					//add some admin files just in case
 					include_once('admin/bookings/em-confirmed.php');
-					include_once('admin/bookings/em-events.php');
-					include_once('admin/bookings/em-pending.php');
-					call_user_func($_REQUEST['em_obj']);
+					em_bookings_confirmed_table();
 					exit();
 					break;
 			}
@@ -649,14 +657,15 @@ add_action('wp_ajax_em_bookings_table','em_ajax_bookings_table');
  */
 function em_ajax_search_and_pagination(){
 	$args = array( 'owner' => false, 'pagination' => 1, 'ajax' => true);
-	if( empty($args['scope']) ){ $args['scope'] = get_option('dbem_events_page_scope'); }
 	echo '<div class="em-search-ajax">';
 	ob_start();
 	if( $_REQUEST['action'] == 'search_events' ){
+		$args['scope'] = get_option('dbem_events_page_scope');
 		$args = EM_Events::get_post_search($args);
 		$args['limit'] = !empty($args['limit']) ? $args['limit'] : get_option('dbem_events_default_limit');
 		em_locate_template('templates/events-list.php', true, array('args'=>$args)); //if successful, this template overrides the settings and defaults, including search
 	}elseif( $_REQUEST['action'] == 'search_events_grouped' && defined('DOING_AJAX') ){
+		$args['scope'] = get_option('dbem_events_page_scope');
 		$args = EM_Events::get_post_search($args);
 		$args['limit'] = !empty($args['limit']) ? $args['limit'] : get_option('dbem_events_default_limit');
 		em_locate_template('templates/events-list-grouped.php', true, array('args'=>$args)); //if successful, this template overrides the settings and defaults, including search

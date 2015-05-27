@@ -1,10 +1,14 @@
 <?php
 class EM_Location_Post {
-	function init(){
+	public static function init(){
 		//Front Side Modifiers
 		if( !is_admin() ){
 			//override single page with formats? 
 			add_filter('the_content', array('EM_Location_Post','the_content'));
+			//override excerpts?
+			if( get_option('dbem_cp_locations_excerpt_formats') ){
+			    add_filter('the_excerpt', array('EM_Location_Post','the_excerpt'));
+			}
 			//display as page or other template?
 			if( get_option('dbem_cp_locations_template') ){
 				add_filter('single_template',array('EM_Location_Post','single_template'));
@@ -25,7 +29,7 @@ class EM_Location_Post {
 	 * @param string $template
 	 * @return string
 	 */
-	function single_template($template){
+	public static function single_template($template){
 		global $post;
 		if( !locate_template('single-'.EM_POST_TYPE_LOCATION.'.php') && $post->post_type == EM_POST_TYPE_LOCATION ){
 			//do we have a default template to choose for events?
@@ -42,7 +46,7 @@ class EM_Location_Post {
 		return $template;
 	}
 	
-	function post_class( $classes, $class, $post_id ){
+	public static function post_class( $classes, $class, $post_id ){
 	    $post = get_post($post_id);
 	    if( $post->post_type == EM_POST_TYPE_LOCATION ){
 	        foreach( explode(' ', get_option('dbem_cp_locations_post_class')) as $class ){
@@ -52,7 +56,7 @@ class EM_Location_Post {
 	    return $classes;
 	}
 	
-	function body_class( $classes ){
+	public static function body_class( $classes ){
 	    if( em_is_location_page() ){
 	        foreach( explode(' ', get_option('dbem_cp_locations_body_class')) as $class ){
 	            $classes[] = esc_attr($class);
@@ -61,7 +65,20 @@ class EM_Location_Post {
 	    return $classes;
 	}
 	
-	function the_content( $content ){
+	/**
+	 * Overrides the_excerpt if this is an location post type
+	 */
+	public static function the_excerpt($content){
+		global $post;
+		if( $post->post_type == EM_POST_TYPE_LOCATION ){
+			$EM_Location = em_get_location($post);
+			$output = !empty($EM_Location->post_excerpt) ? get_option('dbem_location_excerpt_format'):get_option('dbem_location_excerpt_alt_format');
+			$content = $EM_Location->output($output);
+		}
+		return $content;
+	}
+	
+	public static function the_content( $content ){
 		global $post, $EM_Location;
 		if( $post->post_type == EM_POST_TYPE_LOCATION ){
 			if( is_archive() || is_search() ){
@@ -81,7 +98,7 @@ class EM_Location_Post {
 		return $content;
 	}
 	
-	function parse_query(){
+	public static function parse_query(){
 	    global $wp_query;
 		if( !empty($wp_query->query_vars['post_type']) && $wp_query->query_vars['post_type'] == EM_POST_TYPE_LOCATION ){
 			if( is_admin() ){

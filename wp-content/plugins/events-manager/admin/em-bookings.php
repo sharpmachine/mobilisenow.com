@@ -207,7 +207,6 @@ function em_bookings_single(){
   		<h2>
   			<?php esc_html_e('Edit Booking', 'dbem'); ?>
   		</h2>
-  		<?php if( !is_admin() ) echo $EM_Notices; ?>
   		<div id="poststuff" class="metabox-holder">
 	  		<div id="post-body">
 				<div id="post-body-content">
@@ -228,7 +227,7 @@ function em_bookings_single(){
 									<td>
 										<?php echo $localised_start_date; ?>
 										<?php echo ($localised_end_date != $localised_start_date) ? " - $localised_end_date":'' ?>
-										<?php echo substr ( $EM_Event->start_time, 0, 5 ) . " - " . substr ( $EM_Event->end_time, 0, 5 ); ?>
+										<?php echo substr ( $EM_Event->event_start_time, 0, 5 ) . " - " . substr ( $EM_Event->event_end_time, 0, 5 ); ?>
 									</td>
 								</tr>
 							</table>
@@ -312,7 +311,7 @@ function em_bookings_single(){
 								 	<input type='hidden' name='booking_id' value='<?php echo $EM_Booking->booking_id; ?>'/>
 								 	<input type='hidden' name='event_id' value='<?php echo $EM_Event->event_id; ?>'/>
 								 	<input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('booking_set_status_'.$EM_Booking->booking_id); ?>'/>
-									<br /><em><?php esc_html_e('<strong>Notes:</strong> Ticket availability not taken into account when approving new bookings (i.e. you can overbook).','dbem'); ?></em>
+									<br /><em><?php wp_kses_data(_e('<strong>Notes:</strong> Ticket availability not taken into account when approving new bookings (i.e. you can overbook).','dbem')); ?></em>
 								</form>
 							</div>
 							<form action="" method="post" class="em-booking-form">
@@ -418,7 +417,7 @@ function em_bookings_single(){
 									<input type="button" class="em-booking-submit-modify" id="em-booking-submit-modify" value="<?php esc_attr_e('Modify Booking', 'dbem'); ?>" />
 								</p>
 								<p class="em-booking-single-edit">
-									<em><?php esc_html_e('<strong>Notes:</strong> Ticket availability not taken into account (i.e. you can overbook). Emails are not resent automatically.','dbem'); ?></em>
+									<em><?php _e('<strong>Notes:</strong> Ticket availability not taken into account (i.e. you can overbook). Emails are not resent automatically.','dbem'); ?></em>
 									<br /><br />
 									<input type="submit" class="em-booking-submit" id="em-booking-submit" value="<?php esc_attr_e('Submit Changes', 'dbem'); ?>" />
 									<input type="button" class="em-booking-submit-cancel" id="em-booking-submit-cancel" value="<?php esc_attr_e('Cancel', 'dbem'); ?>" />
@@ -465,7 +464,7 @@ function em_bookings_single(){
 								$user = new EM_Person($note['author']);
 							?>
 							<div>
-								<?php echo date(get_option('date_format'), $note['timestamp']) .' - '. $user->get_name(); ?> <?php esc_html_e('wrote','dbem'); ?>: 
+								<?php echo sprintf(esc_html_x('%1$s - %2$s wrote','[Date] - [Name] wrote','dbem'), date(get_option('date_format'), $note['timestamp']), $user->get_name()); ?>: 
 								<p style="background:#efefef; padding:5px;"><?php echo nl2br($note['note']); ?></p> 
 							</div>
 							<?php endforeach; ?>
